@@ -1,0 +1,129 @@
+#include <iostream>
+#include <unordered_map>
+#include <vector>
+
+using namespace std;
+
+// حجم مصفوفة بلاي فير (5×5)
+const int SIZE = 5;
+vector<vector<char>> matrix(SIZE, vector<char>(SIZE));
+
+// خريطة لتخزين مواقع الأحرف في المصفوفة
+unordered_map<char, pair<int, int>> charPositions;
+
+// دالة لإنشاء مصفوفة بلاي فير من المفتاح
+void generatePlayfairMatrix(string key) {
+    string refinedKey = "";
+    bool used[26] = {false}; 
+
+    // إزالة الحروف المكررة واستبدال 'J' بـ 'I'
+    for (char c : key) {
+        if (c == 'J') c = 'I';
+        if (!used[c - 'A']) {
+            refinedKey += c;
+            used[c - 'A'] = true;
+        }
+    }
+
+    // إكمال المصفوفة بالحروف غير الموجودة في المفتاح
+    for (char c = 'A'; c <= 'Z'; c++) {
+        if (c == 'J') continue; 
+        if (!used[c - 'A']) {
+            refinedKey += c;
+            used[c - 'A'] = true;
+        }
+    }
+
+    // تعبئة المصفوفة وتخزين مواقع الحروف
+    int index = 0;
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            matrix[i][j] = refinedKey[index];
+            charPositions[refinedKey[index]] = {i, j};
+            index++;
+        }
+    }
+}
+
+// دالة التشفير باستخدام خوارزمية Playfair
+string playfairEncrypt(string text) {
+    string encrypted = "";
+    
+    // معالجة النص ليتناسب مع التشفير
+    for (size_t i = 0; i < text.length(); i += 2) {
+        char a = text[i];
+        char b = (i + 1 < text.length()) ? text[i + 1] : 'X';
+
+        if (a == b) b = 'X'; // منع تكرار نفس الحرف
+
+        // استخراج مواقع الحروف في المصفوفة
+        auto posA = charPositions[a];
+        auto posB = charPositions[b];
+
+        int rowA = posA.first, colA = posA.second;
+        int rowB = posB.first, colB = posB.second;
+
+        if (rowA == rowB) { // نفس الصف
+            encrypted += matrix[rowA][(colA + 1) % SIZE];
+            encrypted += matrix[rowB][(colB + 1) % SIZE];
+        } 
+        else if (colA == colB) { // نفس العمود
+            encrypted += matrix[(rowA + 1) % SIZE][colA];
+            encrypted += matrix[(rowB + 1) % SIZE][colB];
+        } 
+        else { // مربع
+            encrypted += matrix[rowA][colB];
+            encrypted += matrix[rowB][colA];
+        }
+    }
+    return encrypted;
+}
+
+// دالة لفك التشفير باستخدام خوارزمية Playfair
+string playfairDecrypt(string text) {
+    string decrypted = "";
+    
+    for (size_t i = 0; i < text.length(); i += 2) {
+        char a = text[i];
+        char b = text[i + 1];
+
+        auto posA = charPositions[a];
+        auto posB = charPositions[b];
+
+        int rowA = posA.first, colA = posA.second;
+        int rowB = posB.first, colB = posB.second;
+
+        if (rowA == rowB) { // نفس الصف
+            decrypted += matrix[rowA][(colA - 1 + SIZE) % SIZE];
+            decrypted += matrix[rowB][(colB - 1 + SIZE) % SIZE];
+        } 
+        else if (colA == colB) { // نفس العمود
+            decrypted += matrix[(rowA - 1 + SIZE) % SIZE][colA];
+            decrypted += matrix[(rowB - 1 + SIZE) % SIZE][colB];
+        } 
+        else { // مربع
+            decrypted += matrix[rowA][colB];
+            decrypted += matrix[rowB][colA];
+        }
+    }
+    return decrypted;
+}
+
+int main() {
+    string key, text;
+    
+    cout << "أدخل المفتاح: ";
+    cin >> key;
+    generatePlayfairMatrix(key);
+
+    cout << "أدخل النص لتشفيره: ";
+    cin >> text;
+
+    string encryptedText = playfairEncrypt(text);
+    cout << "النص المشفر: " << encryptedText << endl;
+
+    string decryptedText = playfairDecrypt(encryptedText);
+    cout << "النص المفكوك التشفير: " << decryptedText << endl;
+
+    return 0;
+}

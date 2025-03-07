@@ -1,0 +1,31 @@
+#include <iostream>
+#include <algorithm>
+
+using namespace std;
+
+string decryptWithKey(string ciphertext, string key) {
+    string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    string decrypted = ciphertext;
+    
+    for (char &c : decrypted) {
+        if (isalpha(c)) {
+            c = alphabet[key.find(c)];
+        }
+    }
+    return decrypted;
+}
+
+void bruteForceAttack(string ciphertext) {
+    string alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    string key = alphabet;
+    
+    do {
+        string decrypted = decryptWithKey(ciphertext, key);
+        cout << "Possible Decryption: " << decrypted << endl;
+    } while (next_permutation(key.begin(), key.end())); // يجرب جميع التباديل الممكنة
+}
+
+int main() {
+    string ciphertext = "JLAPFJHERFJLOFE"; // النص المشفر
+    bruteForceAttack(ciphertext);
+}

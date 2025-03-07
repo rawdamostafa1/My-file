@@ -1,0 +1,71 @@
+طبعًا! إليك كود C++ يقوم بتشفير وفك التشفير باستخدام Caesar Cipher وVigenère Cipher بطريقة مختصرة وسهلة.
+
+كود C++:
+
+#include <iostream>
+using namespace std;
+
+string caesarCipher(string text, int shift, bool encrypt) {
+    shift = encrypt ? shift : -shift;
+    for (char &c : text) {
+        if (isalpha(c)) {
+            char base = isupper(c) ? 'A' : 'a';
+            c = (c - base + shift + 26) % 26 + base;
+        }
+    }
+    return text;
+}
+
+string vigenereCipher(string text, string key, bool encrypt) {
+    int keyLen = key.length();
+    for (int i = 0, j = 0; i < text.length(); i++) {
+        if (isalpha(text[i])) {
+            int shift = (tolower(key[j % keyLen]) - 'a') * (encrypt ? 1 : -1);
+            char base = isupper(text[i]) ? 'A' : 'a';
+            text[i] = (text[i] - base + shift + 26) % 26 + base;
+            j++;
+        }
+    }
+    return text;
+}
+
+int main() {
+    string method, action, text, key;
+    int shift;
+
+    cout << "اختر الطريقة (Caesar/Vigenere): ";
+    cin >> method;
+    cout << "اختر العملية (Encrypt/Decrypt): ";
+    cin >> action;
+    cout << "أدخل النص: ";
+    cin.ignore();
+    getline(cin, text);
+
+    bool encrypt = (action == "Encrypt");
+
+    if (method == "Caesar") {
+        cout << "أدخل عدد الإزاحة: ";
+        cin >> shift;
+        cout << "النتيجة: " << caesarCipher(text, shift, encrypt) << endl;
+    } else if (method == "Vigenere") {
+        cout << "أدخل المفتاح: ";
+        cin >> key;
+        cout << "النتيجة: " << vigenereCipher(text, key, encrypt) << endl;
+    } else {
+        cout << "اختيار غير صالح!" << endl;
+    }
+
+    return 0;
+}
+
+كيف يعمل الكود؟
+
+1. يطلب من المستخدم اختيار طريقة التشفير (Caesar أو Vigenère).
+
+2. يطلب اختيار العملية (Encrypt أو Decrypt).
+
+3. يأخذ النص المدخل من المستخدم.
+
+4. إذا اختار Caesar Cipher، يطلب عدد الإزاحة.
+
+5. إذا اختار **Vigenère
