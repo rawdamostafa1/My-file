@@ -1,6 +1,3 @@
-طبعًا! إليك كود C++ يقوم بتشفير وفك التشفير باستخدام Caesar Cipher وVigenère Cipher بطريقة مختصرة وسهلة.
-
-كود C++:
 
 #include <iostream>
 using namespace std;
